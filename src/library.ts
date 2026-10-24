@@ -9,6 +9,7 @@ export type LibraryGame = {
   version: string;
   status: InstallStatus;
   progress: number;
+  executablePath?: string;
 };
 
 const STORAGE_KEY = "lumorix-hub-library";
@@ -17,8 +18,6 @@ const defaultGames: LibraryGame[] = [
   { id: "lumora-wilds", name: "Lumora Wilds", version: "0.1.0", status: "not-installed", progress: 0 },
   { id: "lumorix-city", name: "Lumorix City", version: "0.1.0", status: "not-installed", progress: 0 },
   { id: "bereketli-ciftlik", name: "Bereketli Çiftlik", version: "0.1.0", status: "not-installed", progress: 0 },
-  { id: "dark-realms", name: "Dark Realms", version: "0.1.0", status: "not-installed", progress: 0 },
-  { id: "speed-rally", name: "Speed Rally", version: "0.1.0", status: "not-installed", progress: 0 },
 ];
 
 function loadGames(): LibraryGame[] {
@@ -52,6 +51,7 @@ function loadGames(): LibraryGame[] {
           progress: Number.isFinite(item.progress)
             ? Math.max(0, Math.min(100, Number(item.progress)))
             : 0,
+          executablePath: typeof item.executablePath === "string" ? item.executablePath : undefined,
         };
       }
 
@@ -102,6 +102,20 @@ export function setInstallStatus(
 
   game.status = status;
   game.progress = Math.max(0, Math.min(100, progress));
+  saveGames();
+  return true;
+}
+
+
+export function getExecutablePath(id: string): string | undefined {
+  return games.find((game) => game.id === id)?.executablePath;
+}
+
+export function setExecutablePath(id: string, path: string): boolean {
+  const game = games.find((item) => item.id === id);
+  if (!game) return false;
+
+  game.executablePath = path;
   saveGames();
   return true;
 }

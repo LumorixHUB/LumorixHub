@@ -1,7 +1,8 @@
 
 
 import "./styles.css";
-import { getLibrary, getInstallLabel } from "./library";
+import { open } from "@tauri-apps/plugin-dialog";
+import { getLibrary, getInstallLabel, getExecutablePath, setExecutablePath } from "./library";
 
 type Game = {
   name: string;
@@ -37,22 +38,6 @@ const games: Game[] = [
     color: "farm",
     status: "Yakında",
   },
-  {
-    name: "Dark Realms",
-    category: "MMORPG · Fantastik",
-    icon: "🐉",
-    description: "Gizemli diyarlarda yeni maceralara atıl.",
-    color: "dark",
-    status: "Planlanıyor",
-  },
-  {
-    name: "Speed Rally",
-    category: "Yarış",
-    icon: "🏎️",
-    description: "Zorlu pistlerde hızını göster.",
-    color: "rally",
-    status: "Planlanıyor",
-  },
 ];
 
 const news = [
@@ -65,10 +50,20 @@ let activePage = "Ana Sayfa";
 let selectedGame = "Lumora Wilds";
 let searchTerm = "";
 
+
 const app = document.querySelector<HTMLDivElement>("#app");
 
 if (!app) {
   throw new Error("#app elementi bulunamadı. index.html dosyasını kontrol et.");
+}
+
+function getLibraryId(gameName: string): string {
+  const ids: Record<string, string> = {
+    "Lumora Wilds": "lumora-wilds",
+    "Lumorix City": "lumorix-city",
+    "Bereketli Çiftlik": "bereketli-ciftlik",
+  };
+  return ids[gameName] ?? "";
 }
 
 function escapeHtml(value: string): string {
@@ -241,8 +236,12 @@ function render(): void {
         <span class="section-kicker">LUMORIX GAME LIBRARY</span>
         <h2 id="modal-title">Lumora Wilds</h2>
         <p id="modal-text">Oyun bilgileri.</p>
-        <div class="modal-note">Bu bir arayüz ön sürümüdür. Oyun indirme ve başlatma altyapısı henüz bağlanmadı.</div>
-        <button class="primary-button modal-button" data-action="close">ANLADIM</button>
+        <div class="modal-note">Oyun dosyasını seçebilirsin. Dosya seçmek oyunu çalıştırmaz; indirme ve başlatma altyapısı ayrıca kurulmalıdır.</div>
+        <div class="executable-picker">
+          <button class="outline-button modal-button" data-action="select-executable">DOSYA SEÇ (.EXE)</button>
+          <p id="executable-path" class="executable-path">Seçilen dosya: henüz yok</p>
+        </div>
+        <button class="primary-button modal-button" data-action="close">KAPAT</button>
       </div>
     </div>
   `;
@@ -291,8 +290,19 @@ function openGame(gameName: string, mode = "details"): void {
     : "Yüklü değil";
 
   text.textContent = mode === "play"
-    ? `${game.name} — ${installLabel}. ${libraryGame?.status === "installed" ? "Oyun dosyalarının gerçekten kurulu olduğu doğrulandığında başlatılabilir." : "Oyun dosyaları ve güvenli indirme sistemi hazır olduğunda buradan yükleyip başlatabileceksin."}`
+    ? `${game.name} — ${installLabel}. Dosya seçimi yapılabilir; oyun henüz bu pencereden başlatılmıyor.`
     : `${game.description} Tür: ${game.category}. Geliştirme durumu: ${game.status}. Kütüphane: ${installLabel}.`;
+
+  const pathLabel = document.querySelector<HTMLElement>("#executable-path");
+  if (pathLabel) {
+    pathLabel.textContent = getExecutablePath(getLibraryId(game.name))
+      ? `Seçilen dosya: ${getExecutablePath(getLibraryId(game.name))}`
+      : "Seçilen dosya: henüz yok";
+  }
+
+  const selectButton = document.querySelector<HTMLButtonElement>('[data-action="select-executable"]');
+  if (selectButton) selectButton.dataset.game = game.name;
+
   modal.hidden = false;
 }
 
@@ -319,6 +329,28 @@ function bindEvents(): void {
         if (modal) modal.hidden = true;
       } else if (action === "play" || action === "details") {
         openGame(selectedGame, action);
+      } else if (action === "select-executable") {
+        void (async () => {
+          try {
+            const file = await open({
+              multiple: false,
+              directory: false,
+              filters: [{ name: "Windows uygulaması", extensions: ["exe"] }]
+            });
+
+            if (!file || Array.isArray(file)) return;
+
+            const gameName = button.dataset.game ?? selectedGame;
+            const game = games.find((item) => item.name === gameName);
+            if (!game || !setExecutablePath(getLibraryId(game.name), file)) return;
+
+            const pathLabel = document.querySelector<HTMLElement>("#executable-path");
+            if (pathLabel) pathLabel.textContent = `Seçilen dosya: ${file}`;
+          } catch (error) {
+            console.error("Oyun dosyası seçilemedi:", error);
+            window.alert("Dosya seçilemedi. Lütfen uygulamayı Tauri masaüstü sürümünde açtığını kontrol et.");
+          }
+        })();
       } else if (action === "library") {
         activePage = "Oyunlar";
         render();
