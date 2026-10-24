@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core";
 
 
 import "./styles.css";
@@ -342,7 +343,11 @@ function bindEvents(): void {
 
             const gameName = button.dataset.game ?? selectedGame;
             const game = games.find((item) => item.name === gameName);
-            if (!game || !setExecutablePath(getLibraryId(game.name), file)) return;
+            if (!game) return;
+
+            await invoke<string>("validate_game_executable", { path: file });
+
+            if (!setExecutablePath(getLibraryId(game.name), file)) return;
 
             const pathLabel = document.querySelector<HTMLElement>("#executable-path");
             if (pathLabel) pathLabel.textContent = `Seçilen dosya: ${file}`;

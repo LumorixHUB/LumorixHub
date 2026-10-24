@@ -208,3 +208,153 @@ button:disabled { cursor: not-allowed; }
   .hero-caption { display: none; }
   .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Lumorix Hub — görsel kalite iyileştirmesi */
+.game-card {
+  border-radius: 13px;
+  background: linear-gradient(155deg, #10253a, #071321 80%);
+  box-shadow: 0 8px 24px #0002;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  border-color: #24c9f4a0;
+  box-shadow: 0 14px 34px #0005, 0 0 0 1px #24c9f414;
+}
+
+.game-art {
+  height: 175px;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 72% 20%, #f4d28a66, transparent 22%),
+    linear-gradient(160deg, var(--accent2), #071321 88%);
+}
+
+.game-art::before {
+  z-index: -1;
+  inset: 25% 0 0;
+  background:
+    linear-gradient(0deg, #050d18 0%, #07132130 70%),
+    linear-gradient(145deg, transparent 35%, #ffffff0b 35.5%, transparent 36%);
+}
+
+.game-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: .5;
+  background:
+    radial-gradient(ellipse at 80% 75%, var(--accent) 0%, transparent 38%),
+    linear-gradient(120deg, transparent 35%, #ffffff0a 50%, transparent 65%);
+  pointer-events: none;
+}
+
+.game-art.safari {
+  background:
+    radial-gradient(ellipse at 75% 28%, #f8d58a 0%, #c77c3b55 17%, transparent 38%),
+    linear-gradient(165deg, #5b5938 0%, #263d32 48%, #091827 100%);
+}
+
+.game-art.city {
+  background:
+    radial-gradient(ellipse at 70% 25%, #54c9ff66, transparent 32%),
+    linear-gradient(155deg, #263e70, #111d38 62%, #071321);
+}
+
+.game-art.farm {
+  background:
+    radial-gradient(ellipse at 70% 22%, #ffe2a066, transparent 32%),
+    linear-gradient(160deg, #789653, #345c45 52%, #10291f);
+}
+
+.art-orbit {
+  width: 145px;
+  height: 145px;
+  border-color: #ffffff18;
+  box-shadow: 0 0 45px #ffffff0b, inset 0 0 30px #ffffff08;
+}
+
+.art-icon {
+  font-size: 48px;
+  filter: drop-shadow(0 7px 13px #0008);
+  transition: transform .25s ease, filter .25s ease;
+}
+
+.game-card:hover .art-icon {
+  transform: translateY(-4px) scale(1.08);
+  filter: drop-shadow(0 9px 18px #000b);
+}
+
+.art-brand {
+  font-size: 8px;
+  letter-spacing: 2.5px;
+  text-shadow: 0 2px 8px #0008;
+}
+
+.art-title {
+  font-size: 13px;
+  letter-spacing: .3px;
+  bottom: 13px;
+  text-shadow: 0 2px 10px #000b;
+}
+
+.game-card-info {
+  padding: 14px 12px 9px;
+}
+
+.game-card-info strong {
+  font-size: 11px;
+}
+
+.game-card-info small {
+  font-size: 9px;
+}
+
+.game-status {
+  background: #efbd6710;
+  border-color: #efbd6750;
+}
+
+.hero {
+  min-height: 410px;
+  border-color: #36566c;
+  box-shadow: 0 16px 40px #0003;
+}
+
+.hero-backdrop {
+  background:
+    radial-gradient(ellipse at 78% 25%, #ffd28a 0%, #c7804e66 9%, transparent 31%),
+    radial-gradient(ellipse at 82% 85%, #71915b 0%, transparent 33%),
+    linear-gradient(170deg, transparent 37%, #293d30 38%, #314c36 62%, #071522 100%);
+}
+
+.hero-backdrop::after {
+  opacity: .12;
+}
+
+.primary-button,
+.outline-button {
+  transition: transform .18s ease, filter .18s ease, border-color .18s ease;
+}
+
+.primary-button:hover,
+.outline-button:hover {
+  transform: translateY(-2px);
+}
+
+.news-item,
+.right-panel,
+.status-panel,
+.placeholder-panel {
+  box-shadow: 0 8px 24px #0002;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card,
+  .art-icon,
+  .primary-button,
+  .outline-button {
+    transition: none;
+  }
+}
