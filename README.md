@@ -1,16 +1,19 @@
-## Hi there 👋
+# LUMORIX HUB
 
-<!--
-**LumorixHUB/LumorixHub** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+Oyunların merkezi. Yeni dünyaların başlangıcı.
 
-Here are some ideas to get you started:
+## Hakkında
+LUMORIX HUB, oyunları keşfetmek ve oyun kütüphanesini yönetmek için geliştirilen bir masaüstü uygulamasıdır.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## Teknolojiler
+- TypeScript
+- Vite
+- Tauri 2
+- Rust
+
+## Oyunlar
+- Lumora Wilds
+- Lumorix City
+- Bereketli Çiftlik
+- Dark Realms
+- Speed Rally
