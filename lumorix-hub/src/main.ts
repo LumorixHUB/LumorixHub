@@ -1,5 +1,7 @@
 
+
 import "./styles.css";
+import { getLibrary, getInstallLabel } from "./library";
 
 type Game = {
   name: string;
@@ -126,12 +128,18 @@ function render(): void {
           </button>
 
           <div class="side-heading second-heading">OYUNLARIM</div>
-          ${games.slice(0, 3).map((game) => `
-            <button class="library-item ${selectedGame === game.name ? "library-active" : ""}" data-game="${game.name}">
-              <span class="game-icon ${game.color}">${game.icon}</span>
-              <span class="library-copy"><strong>${game.name}</strong><small>${game.category}</small></span>
-            </button>
-          `).join("")}
+          ${games.slice(0, 3).map((game) => {
+            const libraryGame = getLibrary().find((item) => item.name === game.name);
+            const installLabel = libraryGame
+              ? getInstallLabel(libraryGame.status)
+              : "Yüklü değil";
+            return `
+              <button class="library-item ${selectedGame === game.name ? "library-active" : ""}" data-game="${game.name}">
+                <span class="game-icon ${game.color}">${game.icon}</span>
+                <span class="library-copy"><strong>${game.name}</strong><small>${installLabel}</small></span>
+              </button>
+            `;
+          }).join("")}
 
           <div class="sidebar-bottom">
             <div class="mini-brand">LUMORIX <span>STUDIO</span></div>
@@ -183,6 +191,7 @@ function render(): void {
               <span class="section-kicker">LUMORIX GAME LIBRARY</span>
               <h1>Tüm oyunlar</h1>
               <p>LUMORIX evrenindeki oyunları keşfet.</p>
+              <p class="library-summary">Toplam ${games.length} oyun · ${getLibrary().filter((item) => item.status === "installed").length} yüklü · ${getLibrary().filter((item) => item.status === "not-installed").length} yüklenmemiş</p>
               <input id="game-search" class="search-input" placeholder="Oyun ara..." value="${escapeHtml(searchTerm)}" />
             </section>
             <div class="game-grid all-games">
@@ -242,6 +251,11 @@ function render(): void {
 }
 
 function gameCard(game: Game): string {
+  const libraryGame = getLibrary().find((item) => item.name === game.name);
+  const installLabel = libraryGame
+    ? getInstallLabel(libraryGame.status)
+    : "Yüklü değil";
+
   return `
     <article class="game-card">
       <button class="game-art ${game.color}" data-game="${game.name}" aria-label="${game.name} detayları">
@@ -251,7 +265,7 @@ function gameCard(game: Game): string {
       </button>
       <div class="game-card-info">
         <div><strong>${game.name}</strong><small>${game.category}</small></div>
-        <span class="game-status">${game.status}</span>
+        <span class="game-status">${installLabel}</span>
       </div>
       <button class="card-details" data-game="${game.name}">Detayları görüntüle <span>↗</span></button>
     </article>
@@ -271,9 +285,14 @@ function openGame(gameName: string, mode = "details"): void {
 
   title.textContent = game.name;
   icon.textContent = game.icon;
+  const libraryGame = getLibrary().find((item) => item.name === game.name);
+  const installLabel = libraryGame
+    ? getInstallLabel(libraryGame.status)
+    : "Yüklü değil";
+
   text.textContent = mode === "play"
-    ? `${game.name} şu anda ${game.status.toLocaleLowerCase("tr-TR")}. Oyun dosyaları ve güvenli indirme sistemi hazır olduğunda buradan yükleyip başlatabileceksin.`
-    : `${game.description} Tür: ${game.category}. Durum: ${game.status}.`;
+    ? `${game.name} — ${installLabel}. ${libraryGame?.status === "installed" ? "Oyun dosyalarının gerçekten kurulu olduğu doğrulandığında başlatılabilir." : "Oyun dosyaları ve güvenli indirme sistemi hazır olduğunda buradan yükleyip başlatabileceksin."}`
+    : `${game.description} Tür: ${game.category}. Geliştirme durumu: ${game.status}. Kütüphane: ${installLabel}.`;
   modal.hidden = false;
 }
 
